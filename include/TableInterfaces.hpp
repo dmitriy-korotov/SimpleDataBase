@@ -35,7 +35,7 @@ namespace table_interface
 
 
 	template <typename T>
-	void add_table_interface(my_db::DataBase<T>& DB, const std::string& name_table)
+	void add_table_interface(my_db::DataBase<T>& DB, const std::string& name_table) noexcept
 	{
 		db_functs::show_title(("ƒŒ¡¿¬À≈Õ»≈ «¿œ»—» ¬ “¿¡À»÷”:\t" + name_table).c_str(), WINDOW_WIDTH, '-');
 		std::cout << "\n	Õ¿∆Ã»“≈ ENTER, ◊“Œ¡€ Õ¿◊¿“‹ ƒŒ¡¿¬Àﬂ“‹ «¿œ»—‹\t";	char get = _getche();		std::cout << "\n\n";
@@ -49,13 +49,12 @@ namespace table_interface
 			try
 			{
 				DB.add_record_to_table(name_table, new_record);
+				db_functs::show_title("«¿œ»—‹ ¡€À¿ ƒŒ¡¿¬À≈Õ¿ ¬ ¡¿«” ƒ¿ÕÕ€’", WINDOW_WIDTH, '-');
 			}
-			catch (const std::exception& ex)
+			catch (const std::exception& _ex)
 			{
-				std::cout << ex.what() << std::endl;
+				db_functs::show_title(_ex.what(), WINDOW_WIDTH, '~');
 			}
-
-			db_functs::show_title("«¿œ»—‹ ¡€À¿ ƒŒ¡¿¬À≈Õ¿ ¬ ¡¿«” ƒ¿ÕÕ€’", WINDOW_WIDTH, '-');
 		}
 		else
 		{
@@ -69,20 +68,27 @@ namespace table_interface
 
 
 	template <typename T>
-	void show_records_of_table_interface(my_db::DataBase<T>& DB, const std::string& name_table)
+	void show_records_of_table_interface(my_db::DataBase<T>& DB, const std::string& name_table) noexcept
 	{
 		db_functs::show_title("¬€¬Œƒ ¬—≈’ «¿œ»—≈… ¬ “¿¡À»÷≈", WINDOW_WIDTH, '-');
 		std::cout << std::endl;
 		db_functs::text_centering(("“¿¡À»÷¿:   " + name_table).c_str(), WINDOW_WIDTH);	std::cout << std::endl;
 
-		if (!DB.table_is_empty(name_table))
+		try
 		{
-			db_functs::show_div_line('~', WINDOW_WIDTH);
-			DB.show_table(name_table);
+			if (!DB.table_is_empty(name_table))
+			{
+				db_functs::show_div_line('~', WINDOW_WIDTH);
+				DB.show_table(name_table);
+			}
+			else
+			{
+				db_functs::show_title("¬ “¿¡À»÷≈ Õ≈“ «¿œ»—≈…", WINDOW_WIDTH, '~');
+			}
 		}
-		else
+		catch (const std::exception& _ex)
 		{
-			db_functs::show_title("¬ “¿¡À»÷≈ Õ≈“ «¿œ»—≈…", WINDOW_WIDTH, '~');
+			db_functs::show_title(_ex.what(), WINDOW_WIDTH, '~');
 		}
 		std::cout << "\n\n	Õ¿∆Ã»“≈ ENTER, ◊“Œ¡€ ¬≈–Õ”“‹—ﬂ\t";		char get = _getch();
 	}
@@ -92,14 +98,21 @@ namespace table_interface
 
 
 	template <typename T>
-	void rename_table_interface(my_db::DataBase<T>& DB, const std::string& name_table)
+	void rename_table_interface(my_db::DataBase<T>& DB, const std::string& name_table) noexcept
 	{
 		std::string new_name_table;
 
 		db_functs::show_title("œ≈–≈»Ã≈ÕŒ¬¿Õ»≈ “¿¡À»÷€", WINDOW_WIDTH, '-');
 		std::cout << "\n	¬¬≈ƒ»“≈ ÕŒ¬Œ≈ Õ¿«¬¿Õ»≈ “¿¡À»÷€\t\t";		std::cin >> new_name_table;
 
-		DB.rename_table(name_table, new_name_table);
+		try 
+		{
+			DB.rename_table(name_table, new_name_table);
+		}
+		catch (const std::exception& _ex)
+		{
+			db_functs::show_title(_ex.what(), WINDOW_WIDTH, '~');
+		}
 
 		std::cout << "\n\n";
 		db_functs::show_title("Õ¿«¬¿Õ»≈ ¡€ÀŒ ”—œ≈ÿÕŒ »«Ã≈Õ≈ÕŒ", WINDOW_WIDTH, '~');
@@ -111,7 +124,7 @@ namespace table_interface
 
 
 	template <typename T>
-	void delete_record_of_table_interface(my_db::DataBase<T>& DB, const std::string& name_table)
+	void delete_record_of_table_interface(my_db::DataBase<T>& DB, const std::string& name_table) noexcept
 	{
 		size_t number_of_record;
 
@@ -119,14 +132,22 @@ namespace table_interface
 		std::cout << "\n	¬¬≈ƒ»“≈ ÕŒÃ≈– «¿œ»—»,  Œ“Œ–”ﬁ ¬€ ’Œ“»“≈ ”ƒ¿À»“‹:\t\t";		std::cin >> number_of_record;
 		std::cout << "\n\n";
 		
-		if (DB.delete_record_of_table(name_table, number_of_record))
+		try
 		{
-			db_functs::show_title("«¿œ»—‹ ¬ “¿¡À»÷≈ ¡€À¿ ”—œ≈ÿÕŒ ”ƒ¿À≈Õ¿", WINDOW_WIDTH, '~');
+			if (DB.delete_record_of_table(name_table, number_of_record))
+			{
+				db_functs::show_title("«¿œ»—‹ ¬ “¿¡À»÷≈ ¡€À¿ ”—œ≈ÿÕŒ ”ƒ¿À≈Õ¿", WINDOW_WIDTH, '~');
+			}
+			else
+			{
+				db_functs::show_title("Õ≈ ”ƒ¿ÀŒ—‹ ”ƒ¿À»“‹ «¿œ»—‹", WINDOW_WIDTH, '~');
+			}
 		}
-		else
+		catch (const std::exception& _ex)
 		{
-			db_functs::show_title("Õ≈ ”ƒ¿ÀŒ—‹ ”ƒ¿À»“‹ «¿œ»—‹", WINDOW_WIDTH, '~');
+			db_functs::show_title(_ex.what(), WINDOW_WIDTH, '~');
 		}
+
 		std::cout << "\n\n	Õ¿∆Ã»“≈ ENTER, ◊“Œ¡€ ¬≈–Õ”“‹—ﬂ\t\t";		char get = _getch();
 	}
 
@@ -135,30 +156,39 @@ namespace table_interface
 
 
 	template <typename T>
-	void sort_records_of_table_interface(my_db::DataBase<T>& DB, const std::string& name_table)
+	void sort_records_of_table_interface(my_db::DataBase<T>& DB, const std::string& name_table) noexcept
 	{
 		char type_sort;
 
 		db_functs::show_title("—Œ–“»–Œ¬ ¿ «¿œ»—≈… ¬ “¿¡À»÷≈", WINDOW_WIDTH, '-');
 		std::cout << "\n	¬€¡≈–»“≈ ¬»ƒ —Œ–“»–Œ¬ » S/R (S - Œ¡€◊Õ¿ﬂ, R - ¬ Œ¡–¿“ÕŒÃ œŒ–ﬂƒ ≈):\t";		std::cin >> type_sort;
+		rewind(stdin);
 
-		if (type_sort == 's' || type_sort == 'S')
+		try
 		{
-			DB.sort_records_of_table(name_table);
-			std::cout << "\n\n";
-			db_functs::show_title("«¿œ»—» ¡€À» ”—œ≈ÿÕŒ Œ—Œ–“»–Œ¬¿Õ€", WINDOW_WIDTH, '~');
+			if (type_sort == 's' || type_sort == 'S')
+			{
+				DB.sort_records_of_table(name_table);
+				std::cout << "\n\n";
+				db_functs::show_title("«¿œ»—» ¡€À» ”—œ≈ÿÕŒ Œ—Œ–“»–Œ¬¿Õ€", WINDOW_WIDTH, '~');
+			}
+			else if (type_sort == 'r' || type_sort == 'R')
+			{
+				DB.sort_records_of_table(name_table, true);
+				std::cout << "\n\n";
+				db_functs::show_title("«¿œ»—» ¡€À» ”—œ≈ÿÕŒ Œ—Œ–“»–Œ¬¿Õ€", WINDOW_WIDTH, '~');
+			}
+			else
+			{
+				std::cout << "\n\n";
+				db_functs::show_title("Õ≈“ ƒ¿ÕÕŒ√Œ ¬»ƒ¿ —Œ–“»–Œ¬ »", WINDOW_WIDTH, '~');
+			}
 		}
-		else if (type_sort == 'r' || type_sort == 'R')
+		catch (const std::exception& _ex)
 		{
-			DB.sort_records_of_table(name_table, true);
-			std::cout << "\n\n";
-			db_functs::show_title("«¿œ»—» ¡€À» ”—œ≈ÿÕŒ Œ—Œ–“»–Œ¬¿Õ€", WINDOW_WIDTH, '~');
+			db_functs::show_title(_ex.what(), WINDOW_WIDTH, '~');
 		}
-		else
-		{
-			std::cout << "\n\n";
-			db_functs::show_title("Õ≈“ ƒ¿ÕÕŒ√Œ ¬»ƒ¿ —Œ–“»–Œ¬ »", WINDOW_WIDTH, '~');
-		}
+
 		std::cout << "\n\n	Õ¿∆Ã»“≈ ENTER, ◊“Œ¡€ ¬≈–Õ”“‹—ﬂ Õ¿«¿ƒ\t\t";		char get = _getch();
 	}
 
@@ -167,18 +197,26 @@ namespace table_interface
 
 
 	template <typename T>
-	void find_production_by_personality(my_db::DataBase<T>& DB, const std::string& name_table)
+	void find_production_by_personality(my_db::DataBase<T>& DB, const std::string& name_table) noexcept
 	{
 		lab_3::Man person;
 
 		db_functs::show_title("œŒ»—  –¿¡Œ“Õ» ¿ œŒ »Ã≈Õ» » ‘¿Ã»À»»", WINDOW_WIDTH, '-');
 		std::cout << std::endl;		std::cin >> person;
 
-		if (!DB.find_record_by_field(name_table, person))
+		try
 		{
-			std::cout << "\n\n";
-			db_functs::show_title("–¿¡Œ“Õ»  Õ≈ ¡€À Õ¿…ƒ≈Õ", WINDOW_WIDTH, '~');
+			if (!DB.find_record_by_field(name_table, person))
+			{
+				std::cout << "\n\n";
+				db_functs::show_title("–¿¡Œ“Õ»  Õ≈ ¡€À Õ¿…ƒ≈Õ", WINDOW_WIDTH, '~');
+			}
 		}
+		catch (const std::exception& _ex)
+		{
+			db_functs::show_title(_ex.what(), WINDOW_WIDTH, '~');
+		}
+
 		std::cout << "\n\n	Õ¿∆Ã»“≈ ENTER, ◊“Œ¡€ ¬≈–Õ”“‹—ﬂ Õ¿«¿ƒ\t\t";		char get = _getch();
 	}
 
@@ -187,15 +225,28 @@ namespace table_interface
 
 
 	template <typename T>
-	void filter_records_by_dapartament_number_interface(my_db::DataBase<T>& DB, const std::string& name_table)
+	void filter_records_by_dapartament_number_interface(my_db::DataBase<T>& DB, const std::string& name_table) noexcept
 	{
-		unsigned int dapartament_number = -1;
+		unsigned int departament_number = -1;
 
 		db_functs::show_title("‘»À‹“– «¿œ»—≈… œŒ ÕŒÃ≈–” Œ“ƒ≈À¿", WINDOW_WIDTH, '-');
-		std::cout << "\n	¬¬≈ƒ»“≈ ÕŒÃ≈– Œ“ƒ≈À¿:\t\t";		std::cin >> dapartament_number;
+		std::cout << "\n	¬¬≈ƒ»“≈ ÕŒÃ≈– Œ“ƒ≈À¿:\t\t";		std::cin >> departament_number;
+		while (std::cin.fail())
+		{
+			std::cin.clear();
+			rewind(stdin);
+			std::cout << "\n	¬¬≈ƒ»“≈  Œ––≈ “Õ€… ÕŒÃ≈– Œ“ƒ≈À¿:\t\t";		std::cin >> departament_number;
+		}
 		std::cout << "\n\n";
-		
-		DB.show_filter_records_of_table(name_table, dapartament_number);
+
+		try
+		{
+			DB.show_filter_records_of_table(name_table, departament_number);
+		}
+		catch (const std::exception& _ex)
+		{
+			db_functs::show_title(_ex.what(), WINDOW_WIDTH, '~');
+		}
 
 		std::cout << "\n\n	Õ¿∆Ã»“≈ ENTER, ◊“Œ¡€ ¬≈–Õ”“‹—ﬂ Õ¿«¿ƒ\t\t";		char get = _getch();
 	}
@@ -205,7 +256,7 @@ namespace table_interface
 
 
 	template <typename T>
-	void filter_records_by_profession_interface(my_db::DataBase<T>& DB, const std::string& name_table)
+	void filter_records_by_profession_interface(my_db::DataBase<T>& DB, const std::string& name_table) noexcept
 	{
 		std::string profession;
 
@@ -213,7 +264,14 @@ namespace table_interface
 		std::cout << "\n	¬¬≈ƒ»“≈ Õ¿«¬¿Õ»≈ œ–Œ‘≈—»»:\t\t";		std::cin >> profession;
 		std::cout << "\n\n";
 		
-		DB.show_filter_records_of_table(name_table, profession);
+		try
+		{
+			DB.show_filter_records_of_table(name_table, profession);
+		}
+		catch (const std::exception& _ex)
+		{
+			db_functs::show_title(_ex.what(), WINDOW_WIDTH, '~');
+		}
 
 		std::cout << "\n\n	Õ¿∆Ã»“≈ ENTER, ◊“Œ¡€ ¬≈–Õ”“‹—ﬂ Õ¿«¿ƒ\t\t";		char get = _getch();
 	}
@@ -223,7 +281,7 @@ namespace table_interface
 
 
 	template <typename T>
-	void main_table_interface(my_db::DataBase<T>& DB, const std::string& name_table)
+	void main_table_interface(my_db::DataBase<T>& DB, const std::string& name_table) noexcept
 	{
 		short select_var;
 		bool end = false, is_valid = false;

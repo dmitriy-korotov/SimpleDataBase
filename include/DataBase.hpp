@@ -29,36 +29,37 @@ namespace my_db
 	{
 	public:
 
-		DataBase(const std::string& path_to_file_with_table_names, const std::string& path_to_tables);
+		DataBase(const std::string& path_to_file_with_table_names, const std::string& path_to_tables) noexcept;
 		DataBase(const DataBase&) = delete;
 		DataBase(DataBase&&) = delete;
 		DataBase& operator=(const DataBase&) = delete;
 		DataBase& operator=(DataBase&&) = delete;
+		~DataBase() = default;
 
 
 
-		static void set_executable_path(const std::string& _path_to_exe);
+		static void set_executable_path(const std::string& _path_to_exe) noexcept;
 
 		
 
 		const std::string& get_ref_on_name_table(const std::string& name_table);
-		const std::string& get_path_to_file_with_table_names() const;
+		const std::string& get_path_to_file_with_table_names() const noexcept;
 		
 		void add_table(const std::string& name_table);
 		void rename_table(const std::string& old_name_table, const std::string& new_name_table);
 		void add_record_to_table(const std::string& name_table, const T& record);
-		bool delete_record_of_table(const std::string& name_table, const size_t& number_of_record);
+		bool delete_record_of_table(const std::string& name_table, const size_t number_of_record);
 		void sort_records_of_table(const std::string& name_table, bool reverse = false);
 		void delete_table(const std::string& name_table);
-		void show_table(const std::string& name_table);
-		bool table_is_empty(const std::string& name_table);
-		void show_filter_records_of_table(const std::string& name_table, const std::string& profession);
+		void show_table(const std::string& name_table) const;
+		bool table_is_empty(const std::string& name_table) const;
+		void show_filter_records_of_table(const std::string& name_table, const std::string& profession) const;
 
 		template <typename U>
-		bool find_record_by_field(const std::string& name_table, const U& value);
+		bool find_record_by_field(const std::string& name_table, const U& value) const;
 
 		template <typename U>
-		void show_filter_records_of_table(const std::string& name_table, const U& value);
+		void show_filter_records_of_table(const std::string& name_table, const U& value) const;
 
 	protected:
 
@@ -81,7 +82,7 @@ namespace my_db
 			void __write_name_to_file(const std::string& file_name, const std::string& name) const;
 			void __read_records_from_file(const std::string& file_name);
 			void __write_record_to_file(const T& record) const;
-			void __delete_record_in_file(const std::string& name_file, const size_t& number_of_record);
+			void __delete_record_from_file(const std::string& name_file, const size_t number_of_record);
 
 		public:
 
@@ -90,34 +91,34 @@ namespace my_db
 			Table& operator=(const Table&) = default;
 			Table(Table&&) = default;
 			Table& operator=(Table&&) = default;
-			Table(const std::string& table_name, const std::string& path_to_file_with_table_names, const std::string& path_to_tables);
+			Table(const std::string& table_name, const std::string& path_to_file_with_table_names, const std::string& path_to_tables) noexcept;
 			~Table();
 
 
 
-			const std::string& get_name_table() const;
-			const size_t& get_amount_records() const;
+			const std::string& get_name_table() const noexcept;
+			const size_t& get_amount_records() const noexcept;
 
-			bool empty() const;
+			bool empty() const noexcept;
 			void rename_table(const std::string& new_name);
 			void add_record(const T& record);
 			bool delete_record(const size_t number_of_record);
 			void destroy();
-			void show_table();
-			void sort_records(const bool reverse = false);
+			void show_table() const noexcept;
+			void sort_records(const bool reverse = false) noexcept;
 
 			template <typename U>
-			bool show_finded_record(const U& value);
+			bool show_finded_record(const U& value) const noexcept;
 
 			template <typename U>
-			void show_filter_by_field(const U& value);
+			void show_filter_by_field(const U& value) const noexcept;
 		};
 
 
 	private:
 
 		static void createFile(const std::string& _path);
-		Table& __find_table(const std::string& name_table);
+		const Table& __find_table(const std::string& name_table) const;
 
 	private:
 
@@ -152,7 +153,7 @@ namespace my_db
 	
 
 	template <typename T>
-	void DataBase<T>::set_executable_path(const std::string& _path_to_exe)
+	void DataBase<T>::set_executable_path(const std::string& _path_to_exe) noexcept
 	{
 		path_to_exe = _path_to_exe.substr(0, _path_to_exe.find_last_of("\\/"));
 	}
@@ -160,7 +161,7 @@ namespace my_db
 	
 
 	template <typename T>
-	DataBase<T>::DataBase(const std::string& path_to_file_with_table_names, const std::string& path_to_tables)
+	DataBase<T>::DataBase(const std::string& path_to_file_with_table_names, const std::string& path_to_tables) noexcept
 	{
 		file_with_name_tabels = path_to_exe + '/' + path_to_file_with_table_names;
 		folder_width_tables = path_to_exe + '/' + path_to_tables;
@@ -224,7 +225,7 @@ namespace my_db
 
 	
 	template <typename T>
-	DataBase<T>::template Table& DataBase<T>::__find_table(const std::string& name_table)
+	const DataBase<T>::template Table& DataBase<T>::__find_table(const std::string& name_table) const
 	{
 #if CONTAINER == VECTOR
 		for (int index = 0; index < tables.size(); ++index)
@@ -232,9 +233,12 @@ namespace my_db
 		for (int index = 0; index < tables._size(); ++index)
 #endif
 		{
-			if (tables[index].get_name_table() == name_table) { return tables[index]; }
+			if (tables[index].get_name_table() == name_table) 
+			{
+				return tables[index];
+			}
 		}
-		throw std::exception("Table not found");
+		throw std::exception(("Table not found:" + name_table).c_str());
 	}
 
 	
@@ -242,14 +246,14 @@ namespace my_db
 	template <typename T>
 	const std::string& DataBase<T>::get_ref_on_name_table(const std::string& name_table)
 	{
-		Table& table = __find_table(name_table);
+		const Table& table = __find_table(name_table);
 		return table.get_name_table();
 	}
 
 
 
 	template <typename T>
-	const std::string& DataBase<T>::get_path_to_file_with_table_names() const
+	const std::string& DataBase<T>::get_path_to_file_with_table_names() const noexcept
 	{
 		return file_with_name_tabels;
 	}
@@ -260,15 +264,15 @@ namespace my_db
 	void DataBase<T>::add_table(const std::string& name_table)
 	{
 		Table new_table(name_table, file_with_name_tabels, folder_width_tables);
-		this->tables.push_back(new_table);
+		this->tables.push_back(std::move(new_table));
 	}
 
 
 
 	template <typename T>
-	bool DataBase<T>::delete_record_of_table(const std::string& name_table, const size_t& number_of_record)
+	bool DataBase<T>::delete_record_of_table(const std::string& name_table, const size_t number_of_record)
 	{
-		Table& table = __find_table(name_table);
+		Table& table = const_cast<Table&>(__find_table(name_table));
 		return table.delete_record(number_of_record);
 	}
 
@@ -277,7 +281,7 @@ namespace my_db
 	template <typename T>
 	void DataBase<T>::sort_records_of_table(const std::string& name_table, bool reverse)
 	{
-		Table& table = __find_table(name_table);
+		Table& table = const_cast<Table&>(__find_table(name_table));
 		table.sort_records(reverse);
 	}
 
@@ -286,7 +290,7 @@ namespace my_db
 	template <typename T>
 	void DataBase<T>::rename_table(const std::string& old_name_table, const std::string& new_name_table)
 	{
-		Table& table = __find_table(old_name_table);
+		Table& table = const_cast<Table&>(__find_table(old_name_table));
 		table.rename_table(new_name_table);
 	}
 
@@ -295,7 +299,7 @@ namespace my_db
 	template <typename T>
 	void DataBase<T>::add_record_to_table(const std::string& name_table, const T& record)
 	{
-		Table& table = __find_table(name_table);
+		Table& table = const_cast<Table&>(__find_table(name_table));
 		table.add_record(record);
 	}
 
@@ -317,6 +321,7 @@ namespace my_db
 				break;
 			}
 		}
+
 #if CONTAINER == VECTOR
 		auto it = tables.begin();
 		tables.erase(it + index);
@@ -328,27 +333,27 @@ namespace my_db
 
 
 	template <typename T>
-	void DataBase<T>::show_table(const std::string& name_table)
+	void DataBase<T>::show_table(const std::string& name_table) const
 	{
-		Table table = this->__find_table(name_table);
+		const Table& table = __find_table(name_table);
 		table.show_table();
 	}
 
 
 
 	template <typename T>
-	bool DataBase<T>::table_is_empty(const std::string& name_table)
+	bool DataBase<T>::table_is_empty(const std::string& name_table) const
 	{
-		Table& table = __find_table(name_table);
+		const Table& table = __find_table(name_table);
 		return table.empty();
 	}
 
 
 
 	template <typename T>
-	void DataBase<T>::show_filter_records_of_table(const std::string& name_table, const std::string& profession)
+	void DataBase<T>::show_filter_records_of_table(const std::string& name_table, const std::string& profession) const
 	{
-		Table& table = __find_table(name_table);
+		const Table& table = __find_table(name_table);
 		table.show_filter_by_field(profession);
 	}
 
@@ -356,9 +361,9 @@ namespace my_db
 
 	template <typename T>
 	template <typename U>
-	bool DataBase<T>::find_record_by_field(const std::string& name_table, const U& person)
+	bool DataBase<T>::find_record_by_field(const std::string& name_table, const U& person) const
 	{
-		Table& table = __find_table(name_table);
+		const Table& table = __find_table(name_table);
 		return table.show_finded_record(person);
 	}
 
@@ -366,9 +371,9 @@ namespace my_db
 
 	template <typename T>
 	template <typename U>
-	void DataBase<T>::show_filter_records_of_table(const std::string& name_table, const U& type)
+	void DataBase<T>::show_filter_records_of_table(const std::string& name_table, const U& type) const
 	{
-		Table& table = __find_table(name_table);
+		const Table& table = __find_table(name_table);
 		table.show_filter_by_field(type);
 	}
 
@@ -382,20 +387,29 @@ namespace my_db
 
 	
 
+
+
 	template <typename T>
-	DataBase<T>::Table::Table(const std::string& table_name, const std::string& path_to_file_with_table_names, const std::string& path_to_tables)
+	DataBase<T>::Table::Table(const std::string& table_name, const std::string& path_to_file_with_table_names, const std::string& path_to_tables) noexcept
 	{
 		this->table_name = table_name;
 		this->path_to_file_with_table_names = path_to_file_with_table_names;
 		this->folder_width_tables = path_to_tables;
 
-		if (file_functs::is_inclue(path_to_file_with_table_names, table_name))
+		try
 		{
-			this->__read_records_from_file(folder_width_tables + table_name + FILE_EXPANSION);
+			if (file_functs::is_inclue(path_to_file_with_table_names, table_name))
+			{
+				__read_records_from_file(folder_width_tables + table_name + FILE_EXPANSION);
+			}
+			else
+			{
+				__write_name_to_file(path_to_file_with_table_names, table_name);
+			}
 		}
-		else
+		catch (const std::exception& _ex)
 		{
-			this->__write_name_to_file(path_to_file_with_table_names, table_name);
+			std::cerr << _ex.what() << std::endl;
 		}
 		DataBase::amount_tables++;
 	}
@@ -403,7 +417,10 @@ namespace my_db
 
 
 	template <typename T>
-	DataBase<T>::Table::~Table() { DataBase::amount_tables--; }
+	DataBase<T>::Table::~Table()
+	{
+		DataBase::amount_tables--; 
+	}
 
 
 
@@ -418,8 +435,7 @@ namespace my_db
 		}
 		else
 		{
-			system("CLS");
-			std::cout << TABLE_ERROR << std::endl;
+			throw std::exception(("ERROR: Can't open file: " + file_name).c_str());
 		}
 	}
 
@@ -437,12 +453,16 @@ namespace my_db
 				while (!fin.eof())
 				{
 					fin >> record;
-					this->table_records.push_back(std::move(std::make_shared<T>(record)));
+					this->table_records.push_back(std::make_shared<T>(record));
 					this->amount_records++;
 				}
 			}
 		}
-		fin.close();
+		else
+		{
+			throw std::exception(("ERROR: Can't open file: " + name_file).c_str());
+		}
+		fin.close();	
 	}
 
 
@@ -465,15 +485,14 @@ namespace my_db
 		}
 		else
 		{
-			system("CLS");
-			std::cout << TABLE_ERROR << std::endl;
+			throw std::exception(("ERROR: Can't open file: " + this->table_name + FILE_EXPANSION).c_str());
 		}
 	}
 
 
 
 	template <typename T>
-	void DataBase<T>::Table::__delete_record_in_file(const std::string& name_file, const size_t& number_of_record)
+	void DataBase<T>::Table::__delete_record_from_file(const std::string& name_file, const size_t number_of_record)
 	{
 		std::ifstream file_in(name_file, std::ios::in);
 		if (file_in)
@@ -489,7 +508,10 @@ namespace my_db
 			while (!file_in.eof())
 			{
 				file_in >> temp_container;
-				if (index++ != number_of_record)	records.push_back(temp_container);
+				if (index++ != number_of_record)
+				{
+					records.push_back(temp_container);
+				}
 			}
 			file_in.close();
 
@@ -498,29 +520,56 @@ namespace my_db
 			if (file_out)
 			{
 #if CONTAINER == VECTOR
-				for (int i = 0; i < records.size(); ++i) { if (i != 0) { file_out << '\n'; } file_out << static_cast<T>(records[i]); }
+				for (int i = 0; i < records.size(); ++i)
+				{
+					if (i != 0)
+					{
+						file_out << '\n';
+					}
+					file_out << static_cast<T>(records[i]);
+				}
 #else
-				for (int i = 0; i < records._size(); ++i) { if (i != 0) { file_out << '\n'; } file_out << static_cast<T>(records[i]); }
+				for (int i = 0; i < records._size(); ++i)
+				{
+					if (i != 0)
+					{
+						file_out << '\n'; 
+					}
+					file_out << static_cast<T>(records[i]); 
+				}
 #endif 
 				file_out.close();
 			}
+		}
+		else
+		{
+			throw std::exception(("ERROR: Can't open file: " + name_file).c_str());
 		}
 	}
 
 
 	
 	template <typename T>
-	const std::string& DataBase<T>::Table::get_name_table() const { return this->table_name; }
+	const std::string& DataBase<T>::Table::get_name_table() const noexcept
+	{
+		return this->table_name; 
+	}
 
 
 
 	template <typename T>
-	const size_t& DataBase<T>::Table::get_amount_records() const { return this->amount_records; }
+	const size_t& DataBase<T>::Table::get_amount_records() const noexcept
+	{
+		return this->amount_records; 
+	}
 
 
 
 	template <typename T>
-	bool DataBase<T>::Table::empty() const { return !(bool)this->amount_records; }
+	bool DataBase<T>::Table::empty() const noexcept
+	{
+		return !static_cast<bool>(this->amount_records); 
+	}
 
 
 
@@ -528,8 +577,13 @@ namespace my_db
 	void DataBase<T>::Table::rename_table(const std::string& new_name)
 	{
 		file_functs::replace_word(path_to_file_with_table_names, this->table_name, new_name);
-		int res = std::rename((folder_width_tables + this->table_name + FILE_EXPANSION).c_str(),
-			(folder_width_tables + new_name + FILE_EXPANSION).c_str());
+		std::error_code _error;
+		std::filesystem::rename((folder_width_tables + this->table_name + FILE_EXPANSION).c_str(),
+								(folder_width_tables + new_name + FILE_EXPANSION).c_str(), _error);
+		if (_error)
+		{
+			throw std::exception(_error.message().c_str());
+		}
 		this->table_name = new_name;
 	}
 
@@ -548,14 +602,17 @@ namespace my_db
 	template <typename T>
 	bool DataBase<T>::Table::delete_record(const size_t number_of_table)
 	{
-		if (number_of_table > this->amount_records) { return false; }
+		if (number_of_table > this->amount_records)
+		{
+			return false; 
+		}
 #if CONTAINER == VECTOR
 		auto it = this->table_records.begin();
 		this->table_records.erase(it + number_of_table - 1);
 #else
 		this->table_records.erase(number_of_table - 1);
 #endif
-		this->__delete_record_in_file(folder_width_tables + this->table_name + FILE_EXPANSION, number_of_table);
+		this->__delete_record_from_file(folder_width_tables + this->table_name + FILE_EXPANSION, number_of_table);
 		this->amount_records--;
 		return true;
 	}
@@ -566,14 +623,19 @@ namespace my_db
 	void my_db::DataBase<T>::Table::destroy()
 	{
 		file_functs::delete_word(path_to_file_with_table_names, this->table_name);
-		remove((folder_width_tables + this->table_name + FILE_EXPANSION).c_str());
+		std::error_code _error;
+		std::filesystem::remove((folder_width_tables + this->table_name + FILE_EXPANSION).c_str(), _error);
+		if (_error)
+		{
+			throw std::exception(_error.message().c_str());
+		}
 		this->amount_records = 0;
 	}
 
 
 
 	template <typename T>
-	void DataBase<T>::Table::show_table()
+	void DataBase<T>::Table::show_table() const noexcept
 	{
 		T temp{};
 		temp.show_titles();
@@ -602,13 +664,16 @@ namespace my_db
 
 
 	template <typename T>
-	void DataBase<T>::Table::sort_records(const bool reverse) { db_functs::sort(this->table_records, reverse); }
+	void DataBase<T>::Table::sort_records(const bool reverse) noexcept
+	{
+		db_functs::sort(this->table_records, reverse); 
+	}
 
 
 
 	template <typename T>
 	template <typename U>
-	bool DataBase<T>::Table::show_finded_record(const U& value)
+	bool DataBase<T>::Table::show_finded_record(const U& value) const noexcept
 	{
 #if CONTAINER == VECTOR
 		for (int index = 0; index < table_records.size(); ++index)
@@ -632,7 +697,7 @@ namespace my_db
 
 	template <typename T>
 	template <typename U>
-	void DataBase<T>::Table::show_filter_by_field(const U& value)
+	void DataBase<T>::Table::show_filter_by_field(const U& value) const noexcept
 	{
 		T temp{};
 		temp.show_titles();

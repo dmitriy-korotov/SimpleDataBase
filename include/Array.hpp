@@ -22,11 +22,12 @@ namespace my_array
 
 		Array& operator = (const Array& outher);
 		Array& operator = (Array&& outher);
-		T& operator [] (const size_t& index);
+		const T& operator[](size_t index) const;
+		T& operator [] (size_t index);
 		Array operator + (const Array& outher);
 
-		size_t _size();
-		size_t _capacity();
+		size_t _size() const;
+		size_t _capacity() const;
 		
 		void push_back(const T& value);
 		void push_front(const T& value);
@@ -77,7 +78,10 @@ namespace my_array
 	{
 		this->capacity = this->size = size;
 		data = new T[size];
-		for (int i = 0; i < size; i++) { data[i] = value; }
+		for (int i = 0; i < size; i++)
+		{
+			data[i] = value; 
+		}
 	}
 
 
@@ -89,7 +93,13 @@ namespace my_array
 		this->size = outher.size;
 		this->capacity = outher.capacity;
 
-		for (int i = 0; i < size; i++) { if (i < size) this->data[i] = outher.data[i]; }
+		for (int i = 0; i < size; i++)
+		{
+			if (i < size)
+			{
+				this->data[i] = outher.data[i]; 
+			}
+		}
 	}
 
 
@@ -108,7 +118,10 @@ namespace my_array
 
 
 	template <typename T>
-	Array<T>::~Array() { if (data != nullptr) delete[] data; }
+	Array<T>::~Array()
+	{
+		delete[] data;
+	}
 
 
 
@@ -119,12 +132,18 @@ namespace my_array
 
 
 	template <typename T>
-	size_t Array<T>::_size() { return this->size; }
+	size_t Array<T>::_size() const
+	{
+		return this->size; 
+	}
 
 
 
 	template <typename T>
-	size_t Array<T>::_capacity() { return this->capacity; }
+	size_t Array<T>::_capacity() const 
+	{
+		return this->capacity; 
+	}
 
 
 
@@ -137,7 +156,10 @@ namespace my_array
 			this->size = outher.size;
 			this->capacity = outher.capacity;
 
-			for (int i = 0; i < size; i++) { this->data[i] = outher.data[i]; }
+			for (int i = 0; i < size; i++) 
+			{
+				this->data[i] = outher.data[i];
+			}
 		}
 		return *this;
 	}
@@ -162,7 +184,15 @@ namespace my_array
 
 
 	template <typename T>
-	T& Array<T>::operator [] (const size_t& index)
+	T& Array<T>::operator [] (size_t index)
+	{
+		return data[index];
+	}
+
+
+
+	template <typename T>
+	const T& Array<T>::operator [] (size_t index) const
 	{
 		return data[index];
 	}
@@ -176,10 +206,16 @@ namespace my_array
 		result.capacity = this->capacity + outher.capacity;
 		result.size = this->size + outher.size;
 		result.data = new T[result.capacity];
+		
 		int index = 0;
-
-		for (; index < this->size; index++) { result.data[index] = this->data[index]; }
-		for (int i = 0; i < outher.size; i++, index++) { result.data[index] = outher.data[i]; }
+		for (; index < this->size; index++) 
+		{
+			result.data[index] = this->data[index]; 
+		}
+		for (int i = 0; i < outher.size; i++, index++) 
+		{
+			result.data[index] = outher.data[i]; 
+		}
 
 		return result;
 	}
@@ -211,7 +247,10 @@ namespace my_array
 			capacity *= 2;
 			T* new_data = new T[capacity];
 
-			for (int i = 0; i < capacity / 2; i++) { new_data[i] = data[i]; }
+			for (int i = 0; i < capacity / 2; i++)
+			{
+				new_data[i] = data[i]; 
+			}
 			new_data[size++] = value;
 
 			delete[] data;
@@ -234,7 +273,10 @@ namespace my_array
 		else if (size < capacity)
 		{
 			int index = size++;
-			while (index > 0) { data[index] = data[--index]; }
+			while (index > 0)
+			{
+				data[index] = data[--index]; 
+			}
 			data[index] = value;
 		}
 		else
@@ -243,7 +285,10 @@ namespace my_array
 			T* new_data = new T[capacity];
 
 			new_data[0] = value;
-			for (int i = 0; i < capacity / 2; i++) { new_data[i + 1] = data[i]; }
+			for (int i = 0; i < capacity / 2; i++) 
+			{
+				new_data[i + 1] = data[i]; 
+			}
 
 			delete[] data;
 			data = new_data;
@@ -255,11 +300,20 @@ namespace my_array
 	template <typename T>
 	void Array<T>::insert(const size_t& index, const T& value)
 	{
-		if (index < 1) { this->push_front(value); }
-		else if (index >= size) { this->push_back(value); }
+		if (index < 1) 
+		{
+			this->push_front(value); 
+		}
+		else if (index >= size)
+		{
+			this->push_back(value); 
+		}
 		else if (size < capacity)
 		{
-			for (int i = size++; i > index; i--) { data[i] = data[i - 1]; }
+			for (int i = size++; i > index; i--) 
+			{
+				data[i] = data[i - 1]; 
+			}
 			data[index] = value;
 		}
 		else
@@ -269,7 +323,11 @@ namespace my_array
 
 			for (int i = 0; i < capacity / 2; )
 			{
-				if (i == index) { new_data[i] = value; continue; }
+				if (i == index) 
+				{
+					new_data[i] = value; 
+					continue; 
+				}
 				new_data[i] = data[i++];
 			}
 			size++;
@@ -283,14 +341,23 @@ namespace my_array
 	template <typename T>
 	T Array<T>::pop_back()
 	{
-		if (size == 0) throw std::exception("Array is empty");
-		if (--size == 0 || size > capacity / 4) { return data[size]; }
+		if (size == 0)
+		{
+			throw std::exception("Array is empty"); 
+		}
+		if (--size == 0 || size > capacity / 4) 
+		{
+			return data[size]; 
+		}
 		else
 		{
 			capacity /= 2;
 			T* new_data = new T[capacity];
 
-			for (int i = 0; i < size; i++) { new_data[i] = data[i]; }
+			for (int i = 0; i < size; i++)
+			{
+				new_data[i] = data[i]; 
+			}
 
 			T value = data[size];
 
@@ -305,14 +372,23 @@ namespace my_array
 	template <typename T>
 	T Array<T>::pop_front()
 	{
-		if (size == 0) throw std::exception("Array is empty");
-		if (--size == 0 || size > capacity / 4) { return data[size]; }
+		if (size == 0) 
+		{
+			throw std::exception("Array is empty"); 
+		}
+		if (--size == 0 || size > capacity / 4)
+		{
+			return data[size]; 
+		}
 		else
 		{
 			capacity /= 2;
 			T* new_data = new T[capacity];
 
-			for (int i = 0; i < size; i++) { new_data[i] = data[i + 1]; }
+			for (int i = 0; i < size; i++)
+			{
+				new_data[i] = data[i + 1]; 
+			}
 
 			T value = data[0];
 
@@ -327,12 +403,21 @@ namespace my_array
 	template <typename T>
 	T Array<T>::erase(const size_t& index)
 	{
-		if (size == 0) { throw std::exception("Array is empty."); }
-		if (index < 0 || index >= size) { throw std::exception("Index not found."); }
+		if (size == 0) 
+		{ 
+			throw std::exception("Array is empty."); 
+		}
+		if (index < 0 || index >= size) 
+		{
+			throw std::exception("Index not found."); 
+		}
 		else if (size - 1 >= capacity / 4)
 		{
 			T value = data[index];
-			for (size_t i = index; i < size - 1; i++) { data[i] = data[i + 1]; }
+			for (size_t i = index; i < size - 1; i++)
+			{
+				data[i] = data[i + 1]; 
+			}
 			--size;
 			return value;
 		}
@@ -343,7 +428,10 @@ namespace my_array
 
 			for (int i = 0; i < size--; )
 			{
-				if (i == index) { continue; }
+				if (i == index) 
+				{
+					continue; 
+				}
 				new_data[i] = data[i++];
 			}
 
@@ -358,19 +446,31 @@ namespace my_array
 
 
 	template <typename T>
-	void Array<T>::clear() { delete[] data; }
+	void Array<T>::clear()
+	{
+		delete[] data; 
+	}
 
 
 
 	template <typename T>
-	bool Array<T>::empty() { return !(bool)size; }
+	bool Array<T>::empty() 
+	{
+		return !static_cast<bool>(size); 
+	}
 
 
 
 	template <typename T>
 	bool Array<T>::is_include(const T& value)
 	{
-		for (int i = 0; i < size; i++) { if (data[i] == value) return true; }
+		for (int i = 0; i < size; i++) 
+		{
+			if (data[i] == value)
+			{
+				return true;
+			}
+		}
 		return false;
 	}
 
@@ -379,7 +479,13 @@ namespace my_array
 	template <typename T>
 	int Array<T>::find(const T& value)
 	{
-		for (int i = 0; i < size; i++) { if (data[i] == value) return i; }
+		for (int i = 0; i < size; i++)
+		{
+			if (data[i] == value)
+			{
+				return i; 
+			}
+		}
 		throw std::exception("Element not found.");
 	}
 
@@ -388,14 +494,20 @@ namespace my_array
 	template <typename T>
 	T& Array<T>::at(const size_t& index)
 	{
-		if (index < 0 || index >= size) { throw std::exception("List index out of range."); }
+		if (index < 0 || index >= size) 
+		{
+			throw std::exception("List index out of range."); 
+		}
 		return data[index];
 	}
 
 
 
 	template <typename T>
-	Array<T> Array<T>::extend(const Array& outher) { return *this + outher; }
+	Array<T> Array<T>::extend(const Array& outher) 
+	{
+		return *this + outher; 
+	}
 
 
 

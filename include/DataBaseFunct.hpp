@@ -12,14 +12,14 @@
 
 namespace db_functs
 {
-	void text_centering(const char* text, size_t size);
-	void show_div_line(const char symbol, size_t size);
-	void show_title(const char* text, size_t szie, const char symbol_div = '#');
+	void text_centering(const char* text, size_t size) noexcept;
+	void show_div_line(const char symbol, size_t size) noexcept;
+	void show_title(const char* text, size_t szie, const char symbol_div = '#') noexcept;
 
 
 
 	template <typename T>
-	void sort(std::vector<T>& conteiner, bool reverse = false)
+	void sort(std::vector<T>& conteiner, bool reverse = false) noexcept
 	{
 		for (size_t i = 0; i < conteiner.size(); ++i)
 		{
@@ -44,7 +44,7 @@ namespace db_functs
 
 
 	template <typename T>
-	void sort(my_array::Array<T>& conteiner, bool reverse = false)
+	void sort(my_array::Array<T>& conteiner, bool reverse = false) noexcept
 	{
 		for (size_t i = 0; i < conteiner._size(); ++i)
 		{
