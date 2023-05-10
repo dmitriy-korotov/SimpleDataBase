@@ -10,8 +10,8 @@
 #define DEBUG OFF
 
 // WINDOW SETTINGS
-#define WINDOW_WIDTH 120
-#define WINDOW_HEIGHT 30
+#define WINDOW_WIDTH 160
+#define WINDOW_HEIGHT 40
 
 // FILE SETTINGS
 #define BASE_DIR "res/DataBaseTables/"
@@ -36,6 +36,6 @@
 #define MEMORY_CHECK OFF
 
 // TABLE SETTINGS
-#define WIDTH_COLUMN 18
+#define WIDTH_COLUMN 20
 
 #endif // !SETTINGS_HPP

@@ -12,6 +12,7 @@
 #include <iomanip>
 #include <filesystem>
 #include <vector>
+#include <list>
 
 
 
@@ -37,10 +38,11 @@ namespace my_db
 
 		const std::string& get_ref_on_name_table(const std::string& name_table);
 		const std::string& get_path_to_file_with_table_names() const noexcept;
-		
+		const size_t get_amount_records_of_table(const std::string table_name) const;
+
 		void add_table(const std::string& name_table);
 		void rename_table(const std::string& old_name_table, const std::string& new_name_table);
-		void add_record_to_table(const std::string& name_table, const T& record);
+		void add_record_to_table(const std::string& name_table, const T& record, size_t index);
 		bool delete_record_of_table(const std::string& name_table, const size_t number_of_record);
 		void sort_records_of_table(const std::string& name_table, bool reverse = false);
 		void delete_table(const std::string& name_table);
@@ -64,13 +66,13 @@ namespace my_db
 			std::string path_to_file_with_table_names;
 			std::string table_name;
 			std::string folder_width_tables;
-			std::vector<std::shared_ptr<T>> table_records;
+			std::list<std::shared_ptr<T>> table_records;
 
 		private:
 
 			void __write_name_to_file(const std::string& file_name, const std::string& name) const;
 			void __read_records_from_file(const std::string& file_name);
-			void __write_record_to_file(const T& record) const;
+			void __write_record_to_file(const T& record, bool in_back = true) const;
 			void __delete_record_from_file(const std::string& name_file, const size_t number_of_record);
 
 		public:
@@ -90,7 +92,7 @@ namespace my_db
 
 			bool empty() const noexcept;
 			void rename_table(const std::string& new_name);
-			void add_record(const T& record);
+			void add_record(const T& record, size_t index);
 			bool delete_record(const size_t number_of_record);
 			void destroy();
 			void show_table() const noexcept;
@@ -116,7 +118,7 @@ namespace my_db
 
 	private:
 
-		std::vector<Table> tables;
+		std::list<Table> tables;
 		std::string file_with_name_tabels;		
 		std::string folder_width_tables;
 
@@ -212,11 +214,11 @@ namespace my_db
 	template <typename T>
 	const DataBase<T>::template Table& DataBase<T>::__find_table(const std::string& name_table) const
 	{
-		for (int index = 0; index < tables.size(); ++index)
+		for (auto it = tables.cbegin(); it != tables.cend(); ++it)
 		{
-			if (tables[index].get_name_table() == name_table) 
+			if (it->get_name_table() == name_table) 
 			{
-				return tables[index];
+				return *it;
 			}
 		}
 		throw std::exception(("Table not found:" + name_table).c_str());
@@ -237,6 +239,15 @@ namespace my_db
 	const std::string& DataBase<T>::get_path_to_file_with_table_names() const noexcept
 	{
 		return file_with_name_tabels;
+	}
+
+
+
+	template <typename T>
+	const size_t DataBase<T>::get_amount_records_of_table(const std::string table_name) const
+	{
+		const Table& table = __find_table(table_name);
+		return table.get_amount_records();
 	}
 
 
@@ -278,10 +289,10 @@ namespace my_db
 
 
 	template <typename T>
-	void DataBase<T>::add_record_to_table(const std::string& name_table, const T& record)
+	void DataBase<T>::add_record_to_table(const std::string& name_table, const T& record, size_t index)
 	{
 		Table& table = const_cast<Table&>(__find_table(name_table));
-		table.add_record(record);
+		table.add_record(record, index);
 	}
 
 
@@ -289,16 +300,16 @@ namespace my_db
 	template <typename T>
 	void DataBase<T>::delete_table(const std::string& name_table)
 	{
-		int index = 0;
-		for (; index < tables.size(); ++index)
+		auto it = tables.begin();
+		for (; it != tables.end(); ++it)
 		{
-			if (tables[index].get_name_table() == name_table)
+			if (it->get_name_table() == name_table)
 			{
-				tables[index].destroy();
+				it->destroy();
 				break;
 			}
 		}
-		tables.erase(tables.begin() + index);
+		tables.erase(it);
 	}
 
 
@@ -415,46 +426,64 @@ namespace my_db
 	template <typename T>
 	void DataBase<T>::Table::__read_records_from_file(const std::string& name_file)
 	{
-		std::ifstream fin(name_file, std::ios::in);
-		if (fin.is_open())
+		if (std::filesystem::exists(name_file))
 		{
-			if (!file_functs::is_empty(name_file))
+			std::ifstream fin(name_file, std::ios::in);
+			if (fin.is_open())
 			{
-				T record{};
-				while (!fin.eof())
+				if (!file_functs::is_empty(name_file))
 				{
-					fin >> record;
-					this->table_records.push_back(std::make_shared<T>(record));
-					this->amount_records++;
+					T record{};
+					while (!fin.eof())
+					{
+						fin >> record;
+						this->table_records.push_back(std::make_shared<T>(record));
+						this->amount_records++;
+					}
 				}
 			}
+			else
+			{
+				throw std::exception(("ERROR: Can't open file: " + name_file).c_str());
+			}
+			fin.close();
 		}
-		else
-		{
-			throw std::exception(("ERROR: Can't open file: " + name_file).c_str());
-		}
-		fin.close();	
 	}
 
 
 
 	template <typename T>
-	void DataBase<T>::Table::__write_record_to_file(const T& record) const
+	void DataBase<T>::Table::__write_record_to_file(const T& record, bool in_back) const
 	{
 		if (!std::filesystem::exists(folder_width_tables + this->table_name + FILE_EXPANSION))
 		{
 			DataBase::createFile(folder_width_tables + this->table_name + FILE_EXPANSION);
 		}
 
-		std::ofstream fout(folder_width_tables + this->table_name + FILE_EXPANSION, std::ios::app);
+		std::ofstream fout(folder_width_tables + this->table_name + FILE_EXPANSION, std::ios::out);
 
 		if (fout.is_open())
 		{
-			if (this->amount_records != 0)
+			if (amount_records == 0)
 			{
-				fout << '\n'; 
+				fout << record;
 			}
-			fout << record;
+			else
+			{
+				if (in_back)
+				{
+					fout << '\n';
+					fout << record;
+				}
+				else
+				{
+					for (auto it = table_records.cbegin(); it != table_records.cend(); ++it)
+					{
+						fout << '\n';
+						fout << *(*it);
+					}
+				}
+			}
 			fout.close();
 		}
 		else
@@ -473,7 +502,7 @@ namespace my_db
 		{
 			T temp_container{};
 			size_t index = 1;
-			std::vector<T> records;
+			std::list<T> records;
 
 			while (!file_in.eof())
 			{
@@ -489,13 +518,13 @@ namespace my_db
 
 			if (file_out)
 			{
-				for (int i = 0; i < records.size(); ++i)
+				for (auto it = records.begin(); it != records.end(); ++it)
 				{
-					if (i != 0)
+					if (it != records.begin())
 					{
 						file_out << '\n';
 					}
-					file_out << static_cast<T>(records[i]);
+					file_out << static_cast<T>(*it);
 				}
 				file_out.close();
 			}
@@ -549,10 +578,20 @@ namespace my_db
 
 
 	template <typename T>
-	void DataBase<T>::Table::add_record(const T& record)
+	void DataBase<T>::Table::add_record(const T& record, size_t index)
 	{
-		this->table_records.push_back(std::make_shared<T>(record));
-		this->__write_record_to_file(record);
+		if (index >= table_records.size())
+		{
+			table_records.push_back(std::make_shared<T>(record));
+			this->__write_record_to_file(record);
+		}
+		else
+		{
+			auto it = table_records.begin();
+			for (size_t i = 0; i < index; ++i, ++it);
+			this->table_records.insert(it, std::make_shared<T>(record));
+			this->__write_record_to_file(record, false);
+		}
 		this->amount_records++;
 	}
 
@@ -565,9 +604,11 @@ namespace my_db
 		{
 			return false; 
 		}
-		this->table_records.erase(this->table_records.begin() + number_of_table - 1);
-		this->__delete_record_from_file(folder_width_tables + this->table_name + FILE_EXPANSION, number_of_table);
-		this->amount_records--;
+		auto it = table_records.cbegin();
+		for (size_t current_number = 1; current_number < number_of_table; ++current_number, ++it);
+		table_records.erase(it);
+		__delete_record_from_file(folder_width_tables + this->table_name + FILE_EXPANSION, number_of_table);
+		amount_records--;
 		return true;
 	}
 
@@ -594,9 +635,10 @@ namespace my_db
 		T temp{};
 		temp.show_titles();		std::cout << std::endl;
 		db_functs::show_div_line('_', WINDOW_WIDTH);	std::cout << std::endl;
-		for (int index = 0; index < table_records.size(); ++index)
+		size_t index = 0;
+		for (auto it = table_records.cbegin(); it != table_records.cend(); ++index, ++it)
 		{
-			std::cout << '\t' << std::setw(WIDTH_COLUMN) << std::left << index + 1 << *table_records[index] << std::endl;
+			std::cout << '\t' << std::setw(WIDTH_COLUMN) << std::left << index + 1 << *(*it) << std::endl;
 			if (index != table_records.size() - 1)
 			{
 				db_functs::show_div_line('-', WINDOW_WIDTH);
@@ -612,7 +654,20 @@ namespace my_db
 	template <typename T>
 	void DataBase<T>::Table::sort_records(const bool reverse) noexcept
 	{
-		db_functs::sort(this->table_records, reverse); 
+		if (reverse)
+		{
+			table_records.sort([](const std::shared_ptr<T>& _left, const std::shared_ptr<T>& _right)
+				{
+					return *_left > *_right;
+				});
+		}
+		else
+		{
+			table_records.sort([](const std::shared_ptr<T>& _left, const std::shared_ptr<T>& _right)
+				{
+					return *_left < *_right;
+				});
+		}
 	}
 
 
@@ -621,13 +676,13 @@ namespace my_db
 	template <typename U>
 	bool DataBase<T>::Table::show_finded_record(const U& value) const noexcept
 	{
-		for (int index = 0; index < table_records.size(); ++index)
+		for (auto it = table_records.cbegin(); it != table_records.cend(); ++it)
 		{
-			if (*table_records[index] == value)
+			if (*(*it) == value)
 			{
 				std::cout << std::endl;
 				db_functs::show_title("ÍÀÉÄÅÍÍÀß ÇÀÏÈÑÜ", WINDOW_WIDTH, '~');
-				std::cout << "\n\t" << *table_records[index] << std::endl;
+				std::cout << "\n\t" << *(*it) << std::endl;
 				db_functs::show_div_line('_', WINDOW_WIDTH);
 				return true;
 			}
@@ -644,11 +699,12 @@ namespace my_db
 		T temp{};
 		temp.show_titles();	    std::cout << std::endl;
 		db_functs::show_div_line('_', WINDOW_WIDTH);	std::cout << std::endl;
-		for (int index = 0; index < table_records.size(); ++index)
+		size_t index = 0;
+		for (auto it = table_records.cbegin(); it != table_records.cend(); ++index, ++it)
 		{
-			if (predicat(*table_records[index]))
+			if (predicat(*(*it)))
 			{
-				std::cout << '\t' << std::setw(WIDTH_COLUMN) << std::left << index + 1 << *table_records[index] << std::endl;
+				std::cout << '\t' << std::setw(WIDTH_COLUMN) << std::left << index + 1 << *(*it) << std::endl;
 				if (index != table_records.size() - 1)
 				{
 					db_functs::show_div_line('-', WINDOW_WIDTH);

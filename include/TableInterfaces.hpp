@@ -23,12 +23,13 @@ namespace table_interface
 	enum class EInterfaces : uint8_t
 	{
 		AddTable = 49,
-		ShowRecordsOfTable = 50,
-		RenameTable = 51,
-		DeleteRecordOfTable = 52,
-		SortRecordsOfTable = 53,
-		FindProductionByPersonality = 54,
-		FilterRecordsByField = 55,
+		AddTableByNumber = 50,
+		ShowRecordsOfTable = 51,
+		RenameTable = 52,
+		DeleteRecordOfTable = 53,
+		SortRecordsOfTable = 54,
+		FindProductionByPersonality = 55,
+		FilterRecordsByField = 56,
 		Reload = 13,
 		NotFound = 0
 	};
@@ -51,7 +52,58 @@ namespace table_interface
 		{
 			try
 			{
-				DB.add_record_to_table(name_table, new_record);
+				DB.add_record_to_table(name_table, new_record, DB.get_amount_records_of_table(name_table));
+				db_functs::show_title("гюохяэ ашкю днаюбкемю б аюгс дюммшу", WINDOW_WIDTH, '-');
+			}
+			catch (const std::exception& _ex)
+			{
+				db_functs::show_title(_ex.what(), WINDOW_WIDTH, '~');
+			}
+			catch (...)
+			{
+				db_functs::show_title(DATABASE_ERROR, WINDOW_WIDTH, '~');
+			}
+		}
+		else
+		{
+			db_functs::show_title("дюммше гюонкмемш ме йнппейрмн, гюохяэ ме ашкю днаюбкемю", WINDOW_WIDTH, '-');
+		}
+
+		std::cout << "\n	мюфлхре ENTER, врнаш бепмсрэяъ\t";		get = _getche();
+	}
+
+
+
+
+
+	template <typename T>
+	void add_table_by_number_interface(my_db::DataBase<T>& DB, const std::string& name_table) noexcept
+	{
+		int64_t number_of_position = 0;
+
+		db_functs::show_title(("днаюбкемхе гюохях б рюакхжс:\t" + name_table).c_str(), WINDOW_WIDTH, '-');
+
+		std::cout << "\n	ббедхре мнлеп онгхжхх:\t\t";		std::cin >> number_of_position;
+		while (std::cin.fail() || number_of_position <= 0)
+		{
+			std::cin.clear();
+			rewind(stdin);
+			std::cout << "\n	ббедхре йнппейрмши мнлеп онгхжхх:\t\t";		std::cin >> number_of_position;
+		}
+		std::cout << "\n\n";
+
+		db_functs::show_div_line('~', WINDOW_WIDTH);	std::cout << std::endl;
+		std::cout << "\tмюфлхре ENTER, врнаш мювюрэ днаюбкърэ гюохяэ\t";	char get = _getche();		std::cout << "\n\n";
+		db_functs::show_div_line('~', WINDOW_WIDTH);	std::cout << std::endl;
+
+		T new_record{};
+		std::cin >> new_record;
+
+		if (new_record.is_valid())
+		{
+			try
+			{
+				DB.add_record_to_table(name_table, new_record, number_of_position - 1);
 				db_functs::show_title("гюохяэ ашкю днаюбкемю б аюгс дюммшу", WINDOW_WIDTH, '-');
 			}
 			catch (const std::exception& _ex)
@@ -368,23 +420,24 @@ namespace table_interface
 				db_functs::show_title(("рюакхжю:\t" + name_table).c_str(), WINDOW_WIDTH, '-');
 
 				std::cout << "\n	бшаепхре осмйр лемч:\n\n";
-				std::cout << ".................днаюбхрэ гюохяэ б рюакхжс - 1.\n\n";
-				std::cout << ".................онялнрперэ гюохях б рюакхже - 2.\n\n";
-				std::cout << ".................оепехлемнбюрэ рюакхжс - 3.\n\n";
-				std::cout << ".................сдюкхрэ гюохяэ б рюакхже - 4.\n\n";
-				std::cout << ".................нрянпрхпнбюрэ гюохях б рюакхже - 5.\n\n";
-				std::cout << ".................мюирх пюанрмхйю - 6.\n\n";
+				std::cout << ".................днаюбхрэ гюохяэ б рюакхжс (б йнмеж) - 1.\n\n";
+				std::cout << ".................днаюбхрэ гюохяэ б рюакхжс (б он мнлепс) - 2.\n\n";
+				std::cout << ".................онялнрперэ гюохях б рюакхже - 3.\n\n";
+				std::cout << ".................оепехлемнбюрэ рюакхжс - 4.\n\n";
+				std::cout << ".................сдюкхрэ гюохяэ б рюакхже - 5.\n\n";
+				std::cout << ".................нрянпрхпнбюрэ гюохях б рюакхже - 6.\n\n";
+				std::cout << ".................мюирх пюанрмхйю - 7.\n\n";
 				if (typeid(T) == typeid(lab_4::DerivedWorker2))
 				{
-					std::cout << ".................онялнрперэ нртхкэрпнбюммше гюохях он мюгбюмхч опнтеяяхх - 7.\n\n";
+					std::cout << ".................онялнрперэ нртхкэрпнбюммше гюохях он мюгбюмхч опнтеяяхх - 8.\n\n";
 				}
 				else if (typeid(T) == typeid(lab_3::DerivedWorker1))
 				{
-					std::cout << ".................онялнрперэ нртхкэрпнбюммше гюохях он мнлепс нрдекю - 7.\n\n";
+					std::cout << ".................онялнрперэ нртхкэрпнбюммше гюохях он мнлепс нрдекю - 8.\n\n";
 				}
 				else if (typeid(T) == typeid(lab_6::DerivedWorker3))
 				{
-					std::cout << ".................онялнрперэ нртхкэрпнбюммше гюохях он дюре опхмърхъ мю пюанрс - 7.\n\n";
+					std::cout << ".................онялнрперэ нртхкэрпнбюммше гюохях он дюре опхмърхъ мю пюанрс - 8.\n\n";
 				}
 				std::cout << ".................намнбхрэ рюакхжс - ENTER.\n\n";
 				std::cout << ".................дкъ рнцн, врнаш бширх хг рюакхжш мюфлхре  - ESC.\n\n";
@@ -403,6 +456,13 @@ namespace table_interface
 				case EInterfaces::AddTable:
 					system("CLS");
 					add_table_interface(DB, name_table);	
+					system("CLS");
+					is_valid = true;
+					break;
+
+				case EInterfaces::AddTableByNumber:
+					system("CLS");
+					add_table_by_number_interface(DB, name_table);
 					system("CLS");
 					is_valid = true;
 					break;
