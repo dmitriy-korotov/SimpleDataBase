@@ -6,6 +6,7 @@
 #include <string>
 #include <fstream>
 #include <unordered_set>
+#include <unordered_map>
 
 
 
@@ -14,6 +15,12 @@ namespace my_date
 	class Date
 	{
 	public:
+
+		using Day = uint64_t;
+		using Month = uint64_t;
+		using Year = uint64_t;
+
+
 
 		friend std::istream& operator>>(std::istream& _in, Date& _right);
 		friend std::ostream& operator<<(std::ostream& _out, const Date& _right);
@@ -35,6 +42,10 @@ namespace my_date
 		std::string getMonth() const { return month; }
 		unsigned int getYear() const { return year; }
 
+		uint64_t difference(const Date& _other) const noexcept;
+		static Month castToMonthes(Day _days) noexcept;
+		static Year castToYears(Day _days) noexcept;
+
 	private:
 
 		static bool is_valid_date(const std::string& date_str);
@@ -42,7 +53,7 @@ namespace my_date
 
 	private:
 
-		const static std::unordered_set<std::string> all_valid_month;
+		const static std::unordered_map<std::string, uint8_t> monthes;
 
 	private:
 

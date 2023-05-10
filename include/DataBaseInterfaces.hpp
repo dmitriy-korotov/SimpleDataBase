@@ -131,14 +131,13 @@ namespace db_interface
 			{
 				std::cout << std::endl;
 				db_functs::show_title("ÄÀÍÍÎÉ ÒÀËÈÖÛ ÍÅ ÑÓÙÅÑÒÂÓÅÒ", WINDOW_WIDTH, '~');
+				std::cout << "\n	ÍÀÆÌÈÒÅ ×ÒÎÁÛ ENTER ÂÅÐÍÓÒÜÑß ÍÀÇÀÄ:\t\t";		char get = _getch();
 			}
 		}
 		catch (const std::exception& _ex)
 		{
 			db_functs::show_title(_ex.what(), WINDOW_WIDTH, '~');
 		}
-
-		std::cout << "\n	ÍÀÆÌÈÒÅ ×ÒÎÁÛ ENTER ÂÅÐÍÓÒÜÑß ÍÀÇÀÄ:\t\t";		char get = _getch();
 	}
 
 

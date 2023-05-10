@@ -30,11 +30,11 @@ namespace lab_3
 
 
 
-		explicit DerivedWorker1(const Man& person);
+		explicit DerivedWorker1(const Person& person);
 		DerivedWorker1(const std::string& _name, const std::string& _surname, const std::string& _profession,
 			   unsigned int _department_number, float _salary);
 
-		bool operator==(const Man& _right);
+		bool operator==(const Person& _right);
 		bool operator>(const DerivedWorker1& _right) const { return salary > _right.salary; };
 		bool operator<(const DerivedWorker1& _right) const { return salary < _right.salary; };
 
@@ -44,13 +44,10 @@ namespace lab_3
 		unsigned int get_department_number() const { return department_number; }
 		float get_salary() const { return salary; }
 
-		template <typename T>
-		bool hasFiled(const T& value) const { return false; }
-		
-		bool hasFiled(unsigned int _departament_number) const { return department_number == _departament_number; }
+		bool equalDepartamentNumber(unsigned int _departament_number) const { return department_number == _departament_number; }
 		bool is_valid() const;
 	
-		static void show_titles();
+		static void show_titles() noexcept;
 
 	private:
 

@@ -6,30 +6,30 @@
 
 namespace my_date
 {
-	const std::unordered_set<std::string> Date::all_valid_month = { "January",		"Январь",
-																	"February",		"Февраль",
-																	"March",		"Март",
-																	"April",		"Апрель",
-																	"May",			"Май",
-																	"June",			"Июнь",
-																	"July",			"Июль",
-																	"August",		"Август",
-																	"September",	"Сентябрь",
-																	"October",		"Октябрь",
-																	"November",		"Ноябрь",
-																	"December",		"Декабрь"
-																	"january",		"январь",
-																	"february",		"февраль",
-																	"march",		"март",
-																	"april",		"апрель",
-																	"may",			"май",
-																	"june",			"июнь",
-																	"july",			"июль",
-																	"august",		"август",
-																	"september",	"сентябрь",
-																	"october",		"октябрь",
-																	"november",		"ноябрь",
-																	"december",		"декабрь" };
+	const std::unordered_map<std::string, uint8_t> Date::monthes = { std::pair{"January" ,	1},		std::pair{"Январь",		1},
+																	 std::pair{"February",	2},		std::pair{"Февраль",	2},
+																	 std::pair{"March",		3},		std::pair{"Март",		3},
+																	 std::pair{"April",		4},		std::pair{"Апрель",		4},
+																	 std::pair{"May",		5},		std::pair{"Май",		5},
+																	 std::pair{"June",		6},		std::pair{"Июнь",		6},
+																	 std::pair{"July",		7},		std::pair{"Июль",		7},
+																	 std::pair{"August",	8},		std::pair{"Август",		8},
+																	 std::pair{"September", 9},		std::pair{"Сентябрь",	9},
+																	 std::pair{"October",	10},	std::pair{"Октябрь",	10},
+																	 std::pair{"November",	11},	std::pair{"Ноябрь",		11},
+																	 std::pair{"December",	12},	std::pair{"Декабрь",	12},
+																	 std::pair{"january",	1},		std::pair{"январь",		1},
+																	 std::pair{"february",	2},		std::pair{"февраль",	2},
+																	 std::pair{"march",		3},		std::pair{"март",		3},
+																	 std::pair{"april",		4},		std::pair{"апрель",		4},
+																	 std::pair{"may",		5},		std::pair{"май",		5},
+																	 std::pair{"june",		6},		std::pair{"июнь",		6},
+																	 std::pair{"july",		7},		std::pair{"июль",		7},
+																	 std::pair{"august",	8},		std::pair{"август",		8},
+																	 std::pair{"september",	9},		std::pair{"сентябрь",	9},
+																	 std::pair{"october",	10},	std::pair{"октябрь",	10},
+																	 std::pair{"november",	11},	std::pair{"ноябрь",		11},
+																	 std::pair{"december",	12},	std::pair{"декабрь",	12} };
 
 
 
@@ -55,7 +55,7 @@ namespace my_date
 
 	bool Date::setMonth(const std::string& _month)
 	{
-		if (all_valid_month.find(_month) != all_valid_month.end())
+		if (monthes.find(_month) != monthes.end())
 		{
 			month = _month;
 			return true;
@@ -119,10 +119,35 @@ namespace my_date
 
 
 
+	uint64_t Date::difference(const Date& _other) const noexcept
+	{
+		return std::abs(static_cast<int8_t>(day - _other.day))
+			   + 
+			   std::abs(static_cast<int8_t>(monthes.at(month) - monthes.at(month))) * 31
+			   +
+			   std::abs(static_cast<int16_t>(year - _other.year)) * 31 * 12;
+	}
+
+
+
+	Date::Month Date::castToMonthes(Day _days) noexcept
+	{
+		return _days / 31;
+	}
+
+
+
+	Date::Year Date::castToYears(Day _days) noexcept
+	{
+		return _days / (31 * 12);
+	}
+
+
+
 	std::istream& operator>>(std::istream& _in, Date& _right)
 	{
 		std::string date_str;
-		std::cout << "\tВВЕДИТЕ ДАТУ В ФОРМАТЕ ( ДЕНЬ-ЧИСЛО.МЕСЯЦ-СТРОКА.ГОД-ЧИСЛО ):\t\t";			_in >> date_str;
+		_in >> date_str;
 
 		size_t fst_point = date_str.find_first_of('.');
 		size_t scnd_point = date_str.find_last_of('.');
@@ -149,7 +174,7 @@ namespace my_date
 
 	std::ostream& operator<<(std::ostream& _out, const Date& _right)
 	{
-		_out << _right.day << '.' << _right.month << '.' << _right.year;
+		_out << (std::to_string(_right.day) + '.' + _right.month + '.' + std::to_string(_right.year));
 		return _out;
 	}
 

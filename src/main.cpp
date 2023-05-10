@@ -6,6 +6,7 @@
 
 #include "DerivedWorker1.hpp"
 #include "DerivedWorker2.hpp"
+#include "DerivedWorker3.hpp"
 
 #include <iostream>
 #include <conio.h>
@@ -23,6 +24,7 @@ enum class EMainDataBaseInterfaces : uint8_t
 {
 	DerivedWorker1 = 49,
 	DerivedWorker2 = 50,
+	DerivedWorker3 = 51,
 	Reload = 13,
 	NotFound = 0
 };
@@ -35,8 +37,10 @@ int main(int argc, char** argv)
 
 	my_db::DataBase<lab_3::DerivedWorker1>::set_executable_path(argv[0]);
 	my_db::DataBase<lab_4::DerivedWorker2>::set_executable_path(argv[0]);
+	my_db::DataBase<lab_6::DerivedWorker3>::set_executable_path(argv[0]);
 	my_db::DataBase<lab_3::DerivedWorker1> DB_1("res/DataBaseTables/names_of_tables.txt", "res/DataBaseTables/Tables/Worker1/");
 	my_db::DataBase<lab_4::DerivedWorker2> DB_2("res/DataBaseTables/names_of_tables_2.txt", "res/DataBaseTables/Tables/Worker2/");
+	my_db::DataBase<lab_6::DerivedWorker3> DB_3("res/DataBaseTables/names_of_tables_3.txt", "res/DataBaseTables/Tables/Worker3/");
 		
 	char select_var = '0';
 	bool is_valid = false, end = false;
@@ -47,6 +51,7 @@ int main(int argc, char** argv)
 		std::cout << "\n\t\tÂÛÁÅÐÈÒÅ ÁÀÇÓ ÄÀÍÍÛÕ:";
 		std::cout << "\n\n\t1..............................ÐÀÁÎÒÍÈÊ 1";
 		std::cout << "\n\n\t2..............................ÐÀÁÎÒÍÈÊ 2";
+		std::cout << "\n\n\t3..............................ÐÀÁÎÒÍÈÊ 3";
 		std::cout << "\n\n";
 
 		db_functs::show_div_line('~', WINDOW_WIDTH);
@@ -67,6 +72,12 @@ int main(int argc, char** argv)
 		case static_cast<int>(EMainDataBaseInterfaces::DerivedWorker2):
 			system("CLS");
 			db_interface::main_data_base_interface(DB_2);
+			system("CLS");
+			break;
+
+		case static_cast<int>(EMainDataBaseInterfaces::DerivedWorker3):
+			system("CLS");
+			db_interface::main_data_base_interface(DB_3);
 			system("CLS");
 			break;
 

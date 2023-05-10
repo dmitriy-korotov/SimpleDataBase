@@ -7,7 +7,10 @@
 #include "CommonInterfaces.hpp"
 #include "DataBaseFunct.hpp"
 #include "DerivedWorker1.hpp"
-#include "Man.hpp"
+#include "DerivedWorker2.hpp"
+#include "DerivedWorker3.hpp"
+#include "Date.hpp"
+#include "Person.hpp"
 
 #include <iostream>
 #include <typeinfo>
@@ -199,7 +202,7 @@ namespace table_interface
 	template <typename T>
 	void find_production_by_personality(my_db::DataBase<T>& DB, const std::string& name_table) noexcept
 	{
-		lab_3::Man person;
+		lab_3::Person person;
 
 		db_functs::show_title("œŒ»—  –¿¡Œ“Õ» ¿ œŒ »Ã≈Õ» » ‘¿Ã»À»»", WINDOW_WIDTH, '-');
 		std::cout << std::endl;		std::cin >> person;
@@ -224,8 +227,7 @@ namespace table_interface
 
 
 
-	template <typename T>
-	void filter_records_by_dapartament_number_interface(my_db::DataBase<T>& DB, const std::string& name_table) noexcept
+	inline void filter_records_by_dapartament_number_interface(my_db::DataBase<lab_3::DerivedWorker1>& DB, const std::string& name_table) noexcept
 	{
 		unsigned int departament_number = -1;
 
@@ -241,7 +243,11 @@ namespace table_interface
 
 		try
 		{
-			DB.show_filter_records_of_table(name_table, departament_number);
+			DB.show_filter_records_of_table(name_table,
+				[&](const lab_3::DerivedWorker1& _worker)
+				{
+					return _worker.equalDepartamentNumber(departament_number);
+				});
 		}
 		catch (const std::exception& _ex)
 		{
@@ -255,8 +261,7 @@ namespace table_interface
 
 
 
-	template <typename T>
-	void filter_records_by_profession_interface(my_db::DataBase<T>& DB, const std::string& name_table) noexcept
+	inline void filter_records_by_profession_interface(my_db::DataBase<lab_4::DerivedWorker2>& DB, const std::string& name_table) noexcept
 	{
 		std::string profession;
 
@@ -266,7 +271,39 @@ namespace table_interface
 		
 		try
 		{
-			DB.show_filter_records_of_table(name_table, profession);
+			DB.show_filter_records_of_table(name_table,
+				[&](const lab_4::DerivedWorker2& _worker)
+				{
+					return _worker.equalProfession(profession);
+				});
+		}
+		catch (const std::exception& _ex)
+		{
+			db_functs::show_title(_ex.what(), WINDOW_WIDTH, '~');
+		}
+
+		std::cout << "\n\n	Õ¿∆Ã»“≈ ENTER, ◊“Œ¡€ ¬≈–Õ”“‹—ﬂ Õ¿«¿ƒ\t\t";		char get = _getch();
+	}
+
+
+
+
+
+	inline void filter_records_by_date(my_db::DataBase<lab_6::DerivedWorker3>& DB, const std::string& name_table) noexcept
+	{
+		my_date::Date date;
+
+		db_functs::show_title("‘»À‹“– «¿œ»—≈… ƒÀ»“≈À‹ÕŒ—“» –¿¡Œ“€ (–¿¡Œ“¿À» ¡ŒÀ≈≈ 10 À≈“)", WINDOW_WIDTH, '-');
+		std::cout << "\n	¬¬≈ƒ»“≈ “≈ Ÿ”ﬁ ƒ¿“”:\t\t";		std::cin >> date;
+		std::cout << "\n\n";
+
+		try
+		{
+			DB.show_filter_records_of_table(name_table,
+				[&](const lab_6::DerivedWorker3& _worker)
+				{
+					return my_date::Date::castToYears(_worker.getDate().difference(date)) > 10;
+				});
 		}
 		catch (const std::exception& _ex)
 		{
@@ -303,9 +340,13 @@ namespace table_interface
 				{
 					std::cout << ".................œŒ—ÃŒ“–≈“‹ Œ“‘»À‹“–Œ¬¿ÕÕ€≈ «¿œ»—» œŒ Õ¿«¬¿Õ»ﬁ œ–Œ‘≈——»» - 7.\n\n";
 				}
-				else
+				else if (typeid(T) == typeid(lab_3::DerivedWorker1))
 				{
 					std::cout << ".................œŒ—ÃŒ“–≈“‹ Œ“‘»À‹“–Œ¬¿ÕÕ€≈ «¿œ»—» œŒ ÕŒÃ≈–” Œ“ƒ≈À¿ - 7.\n\n";
+				}
+				else if (typeid(T) == typeid(lab_6::DerivedWorker3))
+				{
+					std::cout << ".................œŒ—ÃŒ“–≈“‹ Œ“‘»À‹“–Œ¬¿ÕÕ€≈ «¿œ»—» œŒ ƒ¿“≈ œ–»Õﬂ“»ﬂ Õ¿ –¿¡Œ“” - 7.\n\n";
 				}
 				std::cout << ".................Œ¡ÕŒ¬»“‹ “¿¡À»÷” - ENTER.\n\n";
 				std::cout << ".................ƒÀﬂ “Œ√Œ, ◊“Œ¡€ ¬€…“» »« “¿¡À»÷€ Õ¿∆Ã»“≈  - ESC.\n\n";
@@ -367,11 +408,15 @@ namespace table_interface
 					system("CLS");
 					if (typeid(T) == typeid(lab_3::DerivedWorker1))
 					{
-						filter_records_by_dapartament_number_interface(DB, name_table);	 
+						filter_records_by_dapartament_number_interface(reinterpret_cast<my_db::DataBase<lab_3::DerivedWorker1>&>(DB), name_table);	 
 					}
-					else
+					else if (typeid(T) == typeid(lab_4::DerivedWorker2))
 					{
-						filter_records_by_profession_interface(DB, name_table);
+						filter_records_by_profession_interface(reinterpret_cast<my_db::DataBase<lab_4::DerivedWorker2>&>(DB), name_table);
+					}
+					else if (typeid(T) == typeid(lab_6::DerivedWorker3))
+					{
+						filter_records_by_date(reinterpret_cast<my_db::DataBase<lab_6::DerivedWorker3>&>(DB), name_table);
 					}
 					system("CLS");
 					is_valid = true;

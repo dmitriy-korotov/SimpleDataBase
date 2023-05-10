@@ -4,7 +4,7 @@
 
 namespace lab_3
 {
-	DerivedWorker1::DerivedWorker1(const Man& person)
+	DerivedWorker1::DerivedWorker1(const Person& person)
 		: IWorker(person)
 	{ }
 
@@ -35,7 +35,7 @@ namespace lab_3
 
 
 
-	bool DerivedWorker1::operator==(const Man& _right)
+	bool DerivedWorker1::operator==(const Person& _right)
 	{
 		return this->person == _right;
 	}
@@ -93,13 +93,13 @@ namespace lab_3
 		
 		_out << std::setw(WIDTH_COLUMN) << static_cast<const lab_4::IWorker&>(_right)
 			 << std::setw(WIDTH_COLUMN) << std::left << _right.department_number
-			 << std::setw(WIDTH_COLUMN) << std::left << _right.salary << std::endl;
+			 << std::setw(WIDTH_COLUMN) << std::left << _right.salary;
 		return _out;
 	}
 
 
 
-	void DerivedWorker1::show_titles()
+	void DerivedWorker1::show_titles() noexcept
 	{
 		std::cout << '\t'
 			<< std::setw(WIDTH_COLUMN) << std::left << "ÍÎÌÅÐ ÇÀÏÈÑÈ"
@@ -107,6 +107,6 @@ namespace lab_3
 			<< std::setw(WIDTH_COLUMN) << std::left << "ÔÀÌÈËÈß"
 			<< std::setw(WIDTH_COLUMN) << std::left << "ÏÐÎÔÅÑÑÈß"
 			<< std::setw(WIDTH_COLUMN) << std::left << "ÍÎÌÅÐ ÎÒÄÅËÀ"
-			<< std::setw(WIDTH_COLUMN) << std::left << "ÎÊËÀÄ" << std::endl;
+			<< std::setw(WIDTH_COLUMN) << std::left << "ÎÊËÀÄ";
 	}
 }

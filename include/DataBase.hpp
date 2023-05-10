@@ -11,14 +11,7 @@
 #include <memory>
 #include <iomanip>
 #include <filesystem>
-
-
-
-#if CONTAINER == VECTOR
 #include <vector>
-#else
-#include "Array.hpp"
-#endif
 
 
 
@@ -58,8 +51,8 @@ namespace my_db
 		template <typename U>
 		bool find_record_by_field(const std::string& name_table, const U& value) const;
 
-		template <typename U>
-		void show_filter_records_of_table(const std::string& name_table, const U& value) const;
+		template <typename _Pred>
+		void show_filter_records_of_table(const std::string& name_table, const _Pred& predicat) const;
 
 	protected:
 
@@ -71,11 +64,7 @@ namespace my_db
 			std::string path_to_file_with_table_names;
 			std::string table_name;
 			std::string folder_width_tables;
-#if CONTAINER == MY_ARRAY
-			my_array::Array<std::shared_ptr<T>> table_records;
-#else
 			std::vector<std::shared_ptr<T>> table_records;
-#endif
 
 		private:
 
@@ -110,8 +99,8 @@ namespace my_db
 			template <typename U>
 			bool show_finded_record(const U& value) const noexcept;
 
-			template <typename U>
-			void show_filter_by_field(const U& value) const noexcept;
+			template <typename _Pred>
+			void show_filter_records(const _Pred& predicat) const noexcept;
 		};
 
 
@@ -127,11 +116,7 @@ namespace my_db
 
 	private:
 
-#if CONTAINER == MY_ARRAY
-		my_array::Array<Table> tables;
-#else
 		std::vector<Table> tables;
-#endif
 		std::string file_with_name_tabels;		
 		std::string folder_width_tables;
 
@@ -227,11 +212,7 @@ namespace my_db
 	template <typename T>
 	const DataBase<T>::template Table& DataBase<T>::__find_table(const std::string& name_table) const
 	{
-#if CONTAINER == VECTOR
 		for (int index = 0; index < tables.size(); ++index)
-#else
-		for (int index = 0; index < tables._size(); ++index)
-#endif
 		{
 			if (tables[index].get_name_table() == name_table) 
 			{
@@ -309,11 +290,7 @@ namespace my_db
 	void DataBase<T>::delete_table(const std::string& name_table)
 	{
 		int index = 0;
-#if CONTAINER == VECTOR
 		for (; index < tables.size(); ++index)
-#else
-		for (; index < tables._size(); ++index)
-#endif
 		{
 			if (tables[index].get_name_table() == name_table)
 			{
@@ -321,13 +298,7 @@ namespace my_db
 				break;
 			}
 		}
-
-#if CONTAINER == VECTOR
-		auto it = tables.begin();
-		tables.erase(it + index);
-#else
-		tables.erase(index);
-#endif
+		tables.erase(tables.begin() + index);
 	}
 
 
@@ -354,7 +325,7 @@ namespace my_db
 	void DataBase<T>::show_filter_records_of_table(const std::string& name_table, const std::string& profession) const
 	{
 		const Table& table = __find_table(name_table);
-		table.show_filter_by_field(profession);
+		table.show_filter_records(profession);
 	}
 
 
@@ -370,11 +341,11 @@ namespace my_db
 
 
 	template <typename T>
-	template <typename U>
-	void DataBase<T>::show_filter_records_of_table(const std::string& name_table, const U& type) const
+	template <typename _Pred>
+	void DataBase<T>::show_filter_records_of_table(const std::string& name_table, const _Pred& predicat) const
 	{
 		const Table& table = __find_table(name_table);
-		table.show_filter_by_field(type);
+		table.show_filter_records(predicat);
 	}
 
 
@@ -479,7 +450,10 @@ namespace my_db
 
 		if (fout.is_open())
 		{
-			if (this->amount_records != 0) { fout << '\n'; }
+			if (this->amount_records != 0)
+			{
+				fout << '\n'; 
+			}
 			fout << record;
 			fout.close();
 		}
@@ -499,11 +473,7 @@ namespace my_db
 		{
 			T temp_container{};
 			size_t index = 1;
-#if CONTAINER == VECTOR
 			std::vector<T> records;
-#else
-			my_array::Array<T> records;
-#endif 
 
 			while (!file_in.eof())
 			{
@@ -519,7 +489,6 @@ namespace my_db
 
 			if (file_out)
 			{
-#if CONTAINER == VECTOR
 				for (int i = 0; i < records.size(); ++i)
 				{
 					if (i != 0)
@@ -528,16 +497,6 @@ namespace my_db
 					}
 					file_out << static_cast<T>(records[i]);
 				}
-#else
-				for (int i = 0; i < records._size(); ++i)
-				{
-					if (i != 0)
-					{
-						file_out << '\n'; 
-					}
-					file_out << static_cast<T>(records[i]); 
-				}
-#endif 
 				file_out.close();
 			}
 		}
@@ -606,12 +565,7 @@ namespace my_db
 		{
 			return false; 
 		}
-#if CONTAINER == VECTOR
-		auto it = this->table_records.begin();
-		this->table_records.erase(it + number_of_table - 1);
-#else
-		this->table_records.erase(number_of_table - 1);
-#endif
+		this->table_records.erase(this->table_records.begin() + number_of_table - 1);
 		this->__delete_record_from_file(folder_width_tables + this->table_name + FILE_EXPANSION, number_of_table);
 		this->amount_records--;
 		return true;
@@ -638,20 +592,12 @@ namespace my_db
 	void DataBase<T>::Table::show_table() const noexcept
 	{
 		T temp{};
-		temp.show_titles();
+		temp.show_titles();		std::cout << std::endl;
 		db_functs::show_div_line('_', WINDOW_WIDTH);	std::cout << std::endl;
-#if CONTAINER == VECTOR
 		for (int index = 0; index < table_records.size(); ++index)
-#else
-		for (int index = 0; index < table_records._size(); ++index)
-#endif 
 		{
-			std::cout << '\t' << std::setw(WIDTH_COLUMN) << std::left << index + 1 << *table_records[index];
-#if CONTAINER == VECTOR
+			std::cout << '\t' << std::setw(WIDTH_COLUMN) << std::left << index + 1 << *table_records[index] << std::endl;
 			if (index != table_records.size() - 1)
-#else
-			if (index != table_records._size() - 1)
-#endif
 			{
 				db_functs::show_div_line('-', WINDOW_WIDTH);
 			}
@@ -675,17 +621,13 @@ namespace my_db
 	template <typename U>
 	bool DataBase<T>::Table::show_finded_record(const U& value) const noexcept
 	{
-#if CONTAINER == VECTOR
 		for (int index = 0; index < table_records.size(); ++index)
-#else
-		for (int index = 0; index < table_records._size(); ++index)
-#endif 
 		{
 			if (*table_records[index] == value)
 			{
 				std::cout << std::endl;
 				db_functs::show_title("ÍÀÉÄÅÍÍÀß ÇÀÏÈÑÜ", WINDOW_WIDTH, '~');
-				std::cout << "\n\t" << *table_records[index];
+				std::cout << "\n\t" << *table_records[index] << std::endl;
 				db_functs::show_div_line('_', WINDOW_WIDTH);
 				return true;
 			}
@@ -696,26 +638,18 @@ namespace my_db
 
 
 	template <typename T>
-	template <typename U>
-	void DataBase<T>::Table::show_filter_by_field(const U& value) const noexcept
+	template <typename _Pred>
+	void DataBase<T>::Table::show_filter_records(const _Pred& predicat) const noexcept
 	{
 		T temp{};
-		temp.show_titles();
+		temp.show_titles();	    std::cout << std::endl;
 		db_functs::show_div_line('_', WINDOW_WIDTH);	std::cout << std::endl;
-#if CONTAINER == VECTOR
 		for (int index = 0; index < table_records.size(); ++index)
-#else
-		for (int index = 0; index < table_records._size(); ++index)
-#endif 
 		{
-			if (table_records[index]->hasFiled(value))
+			if (predicat(*table_records[index]))
 			{
-				std::cout << '\t' << std::setw(WIDTH_COLUMN) << std::left << index + 1 << *table_records[index];
-#if CONTAINER == VECTOR
+				std::cout << '\t' << std::setw(WIDTH_COLUMN) << std::left << index + 1 << *table_records[index] << std::endl;
 				if (index != table_records.size() - 1)
-#else
-				if (index != table_records._size() - 1)
-#endif 
 				{
 					db_functs::show_div_line('-', WINDOW_WIDTH);
 				}

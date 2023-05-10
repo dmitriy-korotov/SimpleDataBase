@@ -17,7 +17,7 @@ namespace lab_4
 	public:
 
 		friend std::istream& operator >> (std::istream& _in, DerivedWorker2& _right);
-		friend std::ostream& operator << (std::ostream& _out, DerivedWorker2& _right);
+		friend std::ostream& operator << (std::ostream& _out, const DerivedWorker2& _right);
 		friend std::ifstream& operator >> (std::ifstream& _in, DerivedWorker2& _right);
 		friend std::ofstream& operator << (std::ofstream& _out, const DerivedWorker2& _right);
 
@@ -29,19 +29,18 @@ namespace lab_4
 			, date(_date)
 		{ }
 
-		bool operator == (const lab_3::Man& _right) { return person == _right; }
+		bool operator == (const lab_3::Person& _right) { return person == _right; }
 		bool operator < (const DerivedWorker2& _right) { return date.getYear() < _right.date.getYear(); }
 		bool operator > (const DerivedWorker2& _right) { return date.getYear() > _right.date.getYear(); }
 
 		bool is_valid() const;
+		my_date::Date getDate() const noexcept;
 
-		template <typename T>
-		bool hasFiled(const T& value) const { return false; };
-		bool hasFiled(const std::string& _profession) const { return profession == _profession; };	
+		bool equalProfession(const std::string& _profession) const { return profession == _profession; };	
 
-		static void show_titles();
+		static void show_titles() noexcept;
 
-	private:
+	protected:
 
 		my_date::Date date;
 

@@ -2,7 +2,7 @@
 #ifndef I_WORKER_HPP
 #define I_WORKER_HPP
 
-#include "Man.hpp"
+#include "Person.hpp"
 
 #include <fstream>
 
@@ -26,19 +26,19 @@ namespace lab_4
 		IWorker& operator=(const IWorker&) = default;
 		~IWorker() = default;
 
-		explicit IWorker(const lab_3::Man& _person) : person(_person) {};
+		explicit IWorker(const lab_3::Person& _person) : person(_person) {};
 		IWorker(const std::string& _name, const std::string& _surname, const std::string& _profession)
 			: person(_name, _surname)
 			, profession(_profession)
 		{ }
 
-		bool operator == (const lab_3::Man& _right) { return person == _right; }
+		bool operator == (const lab_3::Person& _right) { return person == _right; }
 
 		bool profession_is_equal(const std::string& _profession) const { return profession == _profession; }
 
 	protected:
 
-		lab_3::Man person;
+		lab_3::Person person;
 		std::string profession;
 
 	};
