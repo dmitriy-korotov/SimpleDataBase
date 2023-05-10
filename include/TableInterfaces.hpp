@@ -58,11 +58,16 @@ namespace table_interface
 			{
 				db_functs::show_title(_ex.what(), WINDOW_WIDTH, '~');
 			}
+			catch (...)
+			{
+				db_functs::show_title(DATABASE_ERROR, WINDOW_WIDTH, '~');
+			}
 		}
 		else
 		{
 			db_functs::show_title("дюммше гюонкмемш ме йнппейрмн, гюохяэ ме ашкю днаюбкемю", WINDOW_WIDTH, '-');
 		}
+
 		std::cout << "\n	мюфлхре ENTER, врнаш бепмсрэяъ\t";		get = _getche();
 	}
 
@@ -93,6 +98,11 @@ namespace table_interface
 		{
 			db_functs::show_title(_ex.what(), WINDOW_WIDTH, '~');
 		}
+		catch (...)
+		{
+			db_functs::show_title(DATABASE_ERROR, WINDOW_WIDTH, '~');
+		}
+
 		std::cout << "\n\n	мюфлхре ENTER, врнаш бепмсрэяъ\t";		char get = _getch();
 	}
 
@@ -115,6 +125,10 @@ namespace table_interface
 		catch (const std::exception& _ex)
 		{
 			db_functs::show_title(_ex.what(), WINDOW_WIDTH, '~');
+		}
+		catch (...)
+		{
+			db_functs::show_title(DATABASE_ERROR, WINDOW_WIDTH, '~');
 		}
 
 		std::cout << "\n\n";
@@ -149,6 +163,10 @@ namespace table_interface
 		catch (const std::exception& _ex)
 		{
 			db_functs::show_title(_ex.what(), WINDOW_WIDTH, '~');
+		}
+		catch (...)
+		{
+			db_functs::show_title(DATABASE_ERROR, WINDOW_WIDTH, '~');
 		}
 
 		std::cout << "\n\n	мюфлхре ENTER, врнаш бепмсрэяъ\t\t";		char get = _getch();
@@ -191,6 +209,10 @@ namespace table_interface
 		{
 			db_functs::show_title(_ex.what(), WINDOW_WIDTH, '~');
 		}
+		catch (...)
+		{
+			db_functs::show_title(DATABASE_ERROR, WINDOW_WIDTH, '~');
+		}
 
 		std::cout << "\n\n	мюфлхре ENTER, врнаш бепмсрэяъ мюгюд\t\t";		char get = _getch();
 	}
@@ -218,6 +240,10 @@ namespace table_interface
 		catch (const std::exception& _ex)
 		{
 			db_functs::show_title(_ex.what(), WINDOW_WIDTH, '~');
+		}
+		catch (...)
+		{
+			db_functs::show_title(DATABASE_ERROR, WINDOW_WIDTH, '~');
 		}
 
 		std::cout << "\n\n	мюфлхре ENTER, врнаш бепмсрэяъ мюгюд\t\t";		char get = _getch();
@@ -253,6 +279,10 @@ namespace table_interface
 		{
 			db_functs::show_title(_ex.what(), WINDOW_WIDTH, '~');
 		}
+		catch (...)
+		{
+			db_functs::show_title(DATABASE_ERROR, WINDOW_WIDTH, '~');
+		}
 
 		std::cout << "\n\n	мюфлхре ENTER, врнаш бепмсрэяъ мюгюд\t\t";		char get = _getch();
 	}
@@ -281,6 +311,10 @@ namespace table_interface
 		{
 			db_functs::show_title(_ex.what(), WINDOW_WIDTH, '~');
 		}
+		catch (...)
+		{
+			db_functs::show_title(DATABASE_ERROR, WINDOW_WIDTH, '~');
+		}
 
 		std::cout << "\n\n	мюфлхре ENTER, врнаш бепмсрэяъ мюгюд\t\t";		char get = _getch();
 	}
@@ -308,6 +342,10 @@ namespace table_interface
 		catch (const std::exception& _ex)
 		{
 			db_functs::show_title(_ex.what(), WINDOW_WIDTH, '~');
+		}
+		catch (...)
+		{
+			db_functs::show_title(DATABASE_ERROR, WINDOW_WIDTH, '~');
 		}
 
 		std::cout << "\n\n	мюфлхре ENTER, врнаш бепмсрэяъ мюгюд\t\t";		char get = _getch();
