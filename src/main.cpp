@@ -8,6 +8,8 @@
 #include "DerivedWorker2.hpp"
 #include "DerivedWorker3.hpp"
 
+#include "ConsoleFunctions.hpp"
+
 #include <iostream>
 #include <conio.h>
 #include <iomanip>
@@ -33,6 +35,9 @@ enum class EMainDataBaseInterfaces : uint8_t
 
 int main(int argc, char** argv)
 {
+	console::setConsoleSize(WINDOW_WIDTH - 2, WINDOW_HEIGHT);
+	console::setConsoleLanguage("ru-RU");
+
 	setlocale(LC_ALL, "ru-RU");
 
 	my_db::DataBase<lab_3::DerivedWorker1>::set_executable_path(argv[0]);
