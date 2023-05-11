@@ -205,7 +205,7 @@ namespace my_db
 		}
 		else
 		{
-			throw std::exception(("ERROR: Can't create file: " + _path).c_str());
+			throw std::runtime_error(("ERROR: Can't create file: " + _path).c_str());
 		}
 	}
 
@@ -221,7 +221,7 @@ namespace my_db
 				return *it;
 			}
 		}
-		throw std::exception(("Table not found:" + name_table).c_str());
+		throw std::runtime_error(("Table not found:" + name_table).c_str());
 	}
 
 	
@@ -417,7 +417,7 @@ namespace my_db
 		}
 		else
 		{
-			throw std::exception(("ERROR: Can't open file: " + file_name).c_str());
+			throw std::runtime_error(("ERROR: Can't open file: " + file_name).c_str());
 		}
 	}
 
@@ -448,6 +448,14 @@ namespace my_db
 			}
 			fin.close();
 		}
+<<<<<<< Updated upstream
+=======
+		else
+		{
+			throw std::runtime_error(("ERROR: Can't open file: " + name_file).c_str());
+		}
+		fin.close();	
+>>>>>>> Stashed changes
 	}
 
 
@@ -488,7 +496,7 @@ namespace my_db
 		}
 		else
 		{
-			throw std::exception(("ERROR: Can't open file: " + this->table_name + FILE_EXPANSION).c_str());
+			throw std::runtime_error(("ERROR: Can't open file: " + this->table_name + FILE_EXPANSION).c_str());
 		}
 	}
 
@@ -531,7 +539,7 @@ namespace my_db
 		}
 		else
 		{
-			throw std::exception(("ERROR: Can't open file: " + name_file).c_str());
+			throw std::runtime_error(("ERROR: Can't open file: " + name_file).c_str());
 		}
 	}
 
@@ -570,7 +578,7 @@ namespace my_db
 								(folder_width_tables + new_name + FILE_EXPANSION).c_str(), _error);
 		if (_error)
 		{
-			throw std::exception(_error.message().c_str());
+			throw std::runtime_error(_error.message().c_str());
 		}
 		this->table_name = new_name;
 	}
@@ -622,7 +630,7 @@ namespace my_db
 		std::filesystem::remove((folder_width_tables + this->table_name + FILE_EXPANSION).c_str(), _error);
 		if (_error)
 		{
-			throw std::exception(_error.message().c_str());
+			throw std::runtime_error(_error.message().c_str());
 		}
 		this->amount_records = 0;
 	}
